@@ -1,3 +1,5 @@
+@import url("https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+
 .App {
   text-align: center;
 }
@@ -19,4 +21,39 @@
 
 .App-link {
   color: #09d3ac;
+}
+.menu-image {
+  height: 300px !important;
+}
+.mt-5 {
+  margin-top: 20px;
+}
+
+#content {
+  padding: 10px;
+  border: solid 1px red;
+}
+
+.active {
+  border: solid 1px black;
+}
+
+.color-picker {
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.pointer {cursor: pointer;}
+
+.button-link {
+    background-color: #ffffff; /* Green */
+    border: none;
+    width: 100%;
+    color: black;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
 }

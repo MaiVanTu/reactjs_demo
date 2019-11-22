@@ -1,12 +1,16 @@
 import React from 'react';
-import '././App.css';
-import AppTask from './components/task/AppTask'
+import '../../App.css';
+import Form from './Form';
 
 class App extends React.Component {
 
 	render() {
 		return (
-				<AppTask/>
+			
+			<div className="container mt-5">
+				<Form/>
+			</div>
+			
 		);
 	}
 }
