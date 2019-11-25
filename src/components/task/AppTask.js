@@ -9,7 +9,10 @@ class AppTask extends React.Component {
         this.state = {
             tasks : [],
             isDisplayAdd: false,
-            taskEditing: {}
+            taskEditing: {},
+            keyword:'',
+            by : '',
+            value: -1
         }
     }
     
@@ -57,15 +60,33 @@ class AppTask extends React.Component {
     }
 
     receviceIsDisplay(data) {
-        this.setState({
-            isDisplayAdd : data
-        })
+        if (this.state.isDisplayAdd && this.state.taskEditing !== null) {
+            this.setState({
+                isDisplayAdd : true,
+                taskEditing: null
+            })
+        } else {
+            this.setState({
+                isDisplayAdd : data,
+                taskEditing: null
+            })
+        }
     }
 
     onSave(data) {
-        data.id = this.genarateID();
-        var {tasks} = this.state;
-        tasks.push(data);
+        var { tasks } = this.state;
+        if (data.id === '') {
+            data.id = this.genarateID();
+            tasks.push(data);
+        } else {
+            var index = tasks.map(function(e) { 
+                return e.id; 
+            }).indexOf(data.id);
+            tasks[index] = data
+        }
+        this.setState({
+            isDisplayAdd : false
+        })
         this.saveAll(tasks);
     }
 
@@ -84,10 +105,35 @@ class AppTask extends React.Component {
         var index = tasks.map(function(e) { 
             return e.id; 
         }).indexOf(id);
+        var taskEditing = tasks[index];
         this.setState({
-            taskEditing:tasks[index]
+            taskEditing:taskEditing
         })
-        console.log(tasks[index]);
+    }
+
+    onDelete(id) {
+        var { tasks } = this.state;
+        var index = tasks.map(function(e) { 
+            return e.id; 
+        }).indexOf(id);
+        this.setState({
+            tasks:tasks.splice(index, 1)
+        })
+        this.saveAll(tasks);
+    }
+
+    onSearch(keyword) {
+        this.setState({
+            keyword : keyword
+        })
+    }
+
+    onSort(by, value) {
+        console.log(by, " - ", value);
+        this.setState({
+            by:by,
+            value:value
+        })
     }
 
     saveAll(tasks) {
@@ -98,7 +144,27 @@ class AppTask extends React.Component {
     }
 
 	render() {
-        var { tasks, isDisplayAdd } = this.state;
+        var { tasks, isDisplayAdd, keyword, by, value} = this.state;
+        if(keyword) {
+            tasks = tasks.filter((task) => {
+                return task.name.toLowerCase().indexOf(keyword) !== -1
+            })
+        }
+
+        if (by === 'name') {
+            tasks.sort((a,b) => {
+                console.log(a, " - ", b);
+                if (a.name > b.name) return -value;
+                else if (a.name < b.name) return value;
+                return 0;
+            })
+        } else {
+            tasks.sort((a,b) => {
+                if (a.status > b.status) return -value;
+                else if (a.status < b.status) return value;
+                return 0;
+            })
+        }
         var elementAddTask = isDisplayAdd ? <Add 
             receviceIsDisplay={this.receviceIsDisplay.bind(this)} 
             onSave={this.onSave.bind(this)}
@@ -127,12 +193,15 @@ class AppTask extends React.Component {
                             <SearchTask  receviceIsDisplay={this.receviceIsDisplay.bind(this)} 
                                 receviceData={this.receviceData.bind(this)} 
                                 isDisplayAdd={this.state.isDisplayAdd} 
-                                genarateTasks={this.genarateTasks.bind(this)}/>
+                                genarateTasks={this.genarateTasks.bind(this)}
+                                onSearch={this.onSearch.bind(this)}
+                                onSort={this.onSort.bind(this)}/>
                             <br/>
                             <Result 
                                 tasks={tasks} 
                                 changeStatus={this.changeStatus.bind(this)}
-                                onEdit={this.onEdit.bind(this)}/>
+                                onEdit={this.onEdit.bind(this)}
+                                onDelete={this.onDelete.bind(this)}/>
                             
                         </div>
                         

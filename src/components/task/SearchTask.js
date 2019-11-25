@@ -2,6 +2,18 @@ import React from 'react';
 
 class SearchTask extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            keyword:'',
+            sort: {
+                by: '',
+                value:1
+            }
+        }
+    }
+    
+
     genarateTasks() {
         this.props.genarateTasks();
     }
@@ -10,7 +22,37 @@ class SearchTask extends React.Component {
         this.props.receviceIsDisplay(!this.props.isDisplayAdd);
     }
 
+    onChange = (event) => {
+        var target = event.target;
+        var name = target.name;
+        var value = target.value;
+        this.setState({
+            [name]:value
+        })
+    }
+
+    onSearch = () => {
+        this.props.onSearch(this.state.keyword);
+    }
+
+    handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.props.onSearch(this.state.keyword);
+        }
+    }
+
+    onSort(by, value) {
+        this.props.onSort(by, value);
+        this.setState({
+            sort: {
+                by:by,
+                value:value
+            }
+        })
+    }
+
 	render() {
+        var { sort } = this.state;
 		return (
 				
                 <div>
@@ -27,9 +69,16 @@ class SearchTask extends React.Component {
                         <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                             
                         <div className="input-group">
-                            <input type="text" className="form-control" placeholder="Search" id="txtSearch"/>
+                            <input 
+                                type="text" 
+                                name="keyword" 
+                                className="form-control" 
+                                placeholder="Search" 
+                                id="txtSearch" 
+                                onChange={this.onChange}
+                                onKeyDown={this.handleKeyDown}/>
                             <div className="input-group-btn">
-                            <button className="btn btn-primary">
+                            <button className="btn btn-primary" onClick={this.onSearch}>
                                 <span className="glyphicon glyphicon-search"></span>
                             </button>
                             </div>
@@ -42,11 +91,19 @@ class SearchTask extends React.Component {
                                 <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Sort&nbsp;
                                 <span className="fa fa-caret-square-o-down"></span></button>
                                 <ul className="dropdown-menu">
-                                    <li><button className="fa fa-sort-alpha-asc pointer button-link">&nbsp;&nbsp;A -> Z</button></li>
-                                    <li><button className="fa fa-sort-alpha-desc pointer button-link">&nbsp;&nbsp;Z -> A</button></li>
+                                    <li onClick={this.onSort.bind(this, "name", 1)}>
+                                        <button className={sort.by === 'name' && sort.value === 1 ? "fa fa-sort-alpha-asc pointer button-link sort-selected" : "fa fa-sort-alpha-asc pointer button-link"}>&nbsp;&nbsp;A -> Z</button>
+                                    </li>
+                                    <li onClick={this.onSort.bind(this, "name", -1)}>
+                                        <button className={sort.by === "name" && sort.value === -1 ? "fa fa-sort-alpha-asc pointer button-link sort-selected" : "fa fa-sort-alpha-asc pointer button-link"}>&nbsp;&nbsp;Z -> A</button>
+                                    </li>
                                     <hr/>
-                                    <li><button className="pointer button-link">Active</button></li>
-                                    <li><button className="pointer button-link">Inactive</button></li>
+                                    <li onClick={this.onSort.bind(this, "status", 1)}>
+                                        <button className={sort.by === "status" && sort.value === 1 ? "pointer button-link sort-selected" : "pointer button-link"}>Active</button>
+                                    </li>
+                                    <li onClick={this.onSort.bind(this, "status", -1)}>
+                                        <button className={sort.by === "status" && sort.value === -1 ? "pointer button-link sort-selected" : "pointer button-link"}>Inactive</button>
+                                    </li>
                                 </ul>
                             </div>
                         

@@ -6,8 +6,12 @@ class Result extends React.Component {
         this.props.changeStatus(id);
     }
 
-    onEdit(task) {
-        this.props.onEdit(task);
+    onEdit(id) {
+        this.props.onEdit(id);
+    }
+
+    onDelete(id) {
+        this.props.onDelete(id);
     }
 
 	render() {
@@ -27,7 +31,7 @@ class Result extends React.Component {
                                 Edit
                                 </button>
                             &nbsp;&nbsp;
-                            <button type="button" className="btn btn-sm btn-danger">
+                            <button type="button" className="btn btn-sm btn-danger" onClick={this.onDelete.bind(this, task.id)}>
                                 <span className="fa fa-window-close"></span>
                                 &nbsp;
                                 Delete
