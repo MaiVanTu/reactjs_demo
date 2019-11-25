@@ -2,6 +2,7 @@ import React from 'react';
 import Add from './Add';
 import SearchTask from './SearchTask';
 import Result from './Result';
+import Redux from './../redux/index'
 
 class AppTask extends React.Component {
     constructor(props) {
