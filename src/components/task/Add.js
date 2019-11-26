@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as action from './../../actions/index';
 
 class Add extends React.Component {
 
@@ -13,18 +15,13 @@ class Add extends React.Component {
 
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps && nextProps.task) {
-            console.log(nextProps);
             this.setState({
                 id: nextProps.task.id,
                 name : nextProps.task.name,
                 status: nextProps.task.status
             });
         } else if (nextProps && nextProps.task === null) {
-            this.setState({
-                id: '',
-                name : '',
-                status: false
-            });
+            this.onClear();
         }
     }
     
@@ -35,18 +32,26 @@ class Add extends React.Component {
                 name : this.props.task.name,
                 status: this.props.task.status
             });
+        } else {
+            this.onClear();
         }
     }
 
     displayAdd() {
-        this.props.receviceIsDisplay(false);
+        // this.props.receviceIsDisplay(false);
+        this.props.closeForm();
     }
 
     onSubmit(event) {
         event.preventDefault();
         if (this.state.name === '') return;
-        this.props.onSave(this.state);
+        this.props.addTask(this.state);
+        this.props.closeForm();
+    }
+
+    onClear = () => {
         this.setState({
+            id: '',
             name : '',
             status: false
         })
@@ -101,4 +106,22 @@ class Add extends React.Component {
 		);
 	}
 }
-export default Add;
+
+const mapStateToProps = (state) => {
+    return {
+        task : state.editTask
+    }
+}
+
+//action
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        addTask: (task) => {
+            dispatch(action.addTask(task));
+        },
+        closeForm: () => {
+            dispatch(action.closeForm());
+        }
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps) (Add);

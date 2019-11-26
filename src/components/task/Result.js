@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as action from './../../actions/index';
 
 class Result extends React.Component {
 
@@ -6,16 +8,38 @@ class Result extends React.Component {
         this.props.changeStatus(id);
     }
 
-    onEdit(id) {
-        this.props.onEdit(id);
+    onEdit(task) {
+        this.props.onEdit(task);
+        this.props.openForm();
     }
 
     onDelete(id) {
         this.props.onDelete(id);
+        this.props.closeForm();
     }
 
 	render() {
-        var element = this.props.tasks.map((task, index) => {
+        var { keyword, tasks, sort } = this.props;
+        if(keyword) {
+            tasks = tasks.filter((task) => {
+                return task.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1
+            })
+        }
+        var {by, value} = sort;
+        if (by === 'name') {
+            tasks.sort((a,b) => {
+                if (a.name > b.name) return -value;
+                else if (a.name < b.name) return value;
+                return 0;
+            })
+        } else {
+            tasks.sort((a,b) => {
+                if (a.status > b.status) return -value;
+                else if (a.status < b.status) return value;
+                return 0;
+            })
+        }
+        var element = tasks.map((task, index) => {
             return <tr key={index}>
                         <td className="col-md-1 text-center">{index}</td>
                         <td className="col-md-5">{task.name}</td>
@@ -25,7 +49,7 @@ class Result extends React.Component {
                         </td>
                         <td className="text-center col-md-4">
                             
-                            <button type="button" className="btn btn-sm btn-warning" onClick={this.onEdit.bind(this, task.id)}>
+                            <button type="button" className="btn btn-sm btn-warning" onClick={this.onEdit.bind(this, task)}>
                                 <span className="fa fa-edit"></span>
                                 &nbsp;
                                 Edit
@@ -59,4 +83,32 @@ class Result extends React.Component {
 		);
 	}
 }
-export default Result;
+
+const mapStateReduxToProps = (state) => {
+    return {
+        tasks: state.tasks,
+        keyword: state.search,
+        sort:state.sort
+    }
+}
+
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        changeStatus: (id) => {
+            dispatch(action.changeStatus(id))
+        },
+        onDelete: (id) => {
+            dispatch(action.onDelete(id))
+        },
+        onEdit: (task) => {
+            dispatch(action.onEdit(task))
+        },
+        closeForm: () => {
+            dispatch(action.closeForm());
+        },
+        openForm: () => {
+            dispatch(action.openForm());
+        },
+    }
+}
+export default connect(mapStateReduxToProps, mapDispatchToProps)(Result);

@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import * as action from './../../actions/index';
 
 class SearchTask extends React.Component {
 
@@ -15,11 +17,18 @@ class SearchTask extends React.Component {
     
 
     genarateTasks() {
-        this.props.genarateTasks();
+        this.props.generator();
     }
 
     displayAdd() {
-        this.props.receviceIsDisplay(!this.props.isDisplayAdd);
+        this.props.onClearTask({
+            id: '',
+            name : '',
+            status: false
+        });
+        if (!this.props.editTask.id) {
+            this.props.toggleForm();
+        }
     }
 
     onChange = (event) => {
@@ -32,17 +41,17 @@ class SearchTask extends React.Component {
     }
 
     onSearch = () => {
-        this.props.onSearch(this.state.keyword);
+        this.props.search(this.state.keyword);
     }
 
     handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            this.props.onSearch(this.state.keyword);
+            this.props.search(this.state.keyword);
         }
     }
 
     onSort(by, value) {
-        this.props.onSort(by, value);
+        this.props.sort({by, value});
         this.setState({
             sort: {
                 by:by,
@@ -115,4 +124,32 @@ class SearchTask extends React.Component {
 		);
 	}
 }
-export default SearchTask;
+
+const mapStateToProps = state => {
+    return {
+        editTask: state.editTask,
+        sort:state.sort
+    }
+}
+
+const mapDispatchToProps = (dispatch, props) => {
+    return {
+        toggleForm: () => {
+            dispatch(action.toggleForm());
+        },
+        onClearTask: (task) => {
+            dispatch(action.onEdit(task))
+        },
+        generator: () => {
+            dispatch(action.generator())
+        },
+        search: (keyword) => {
+            dispatch(action.search(keyword))
+        },
+        sort: (sort) => {
+            dispatch(action.sort(sort))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (SearchTask);
